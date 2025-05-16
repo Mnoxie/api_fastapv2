@@ -1,0 +1,30 @@
+---
+
+## 📄 `.gitignore`
+
+```gitignore
+# Entorno virtual
+env/
+ENV/
+.venv/
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de configuración
+*.env
+.env
+
+# Archivos de logs
+*.log
+
+# Archivos de bases de datos SQLite
+*.sqlite3
+db.sqlite3
+
+# Archivos de editor
+.vscode/
+.idea/
