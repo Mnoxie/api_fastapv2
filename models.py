@@ -3,12 +3,12 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 class Category(Base):
-    __tablename__ = "products_category"  # coincidir con la tabla real
+    __tablename__ = "products_category"  
     id = Column(BigInteger, primary_key=True, index=True)
     name = Column(String(255), unique=True)
 
 class Product(Base):
-    __tablename__ = "products_product"  # coincidir con la tabla real
+    __tablename__ = "products_product"  
     id = Column(BigInteger, primary_key=True, index=True)
     codigo = Column(String(255), unique=True, index=True)
     name = Column(String(255))

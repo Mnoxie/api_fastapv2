@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models, crud, schemas
+from typing import List
+
 
 # Crear tablas automáticamente si no existen
 models.Base.metadata.create_all(bind=engine)
@@ -45,3 +47,11 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     if not deleted:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return {"detail": "Producto eliminado correctamente"}
+
+
+@app.get("/categories/{category_id}/products", response_model=List[schemas.ProductSchema])
+def read_products_by_category(category_id: int, db: Session = Depends(get_db)):
+    products = crud.get_products_by_category(db, category_id=category_id)
+    if not products:
+        raise HTTPException(status_code=404, detail="No products found for this category")
+    return products
