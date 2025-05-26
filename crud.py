@@ -65,3 +65,6 @@ def delete_product(db: Session, product_id: int):
 
 def get_products_by_category(db: Session, category_id: int):
     return db.query(Product).filter(Product.category_id == category_id).all()
+
+def get_product_by_code(db: Session, codigo: str):
+    return db.query(Product).filter(Product.codigo == codigo).first()

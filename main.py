@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models, crud, schemas
 from typing import List
-
+from fastapi import Query
 
 # Crear tablas automáticamente si no existen
 models.Base.metadata.create_all(bind=engine)
@@ -55,3 +55,12 @@ def read_products_by_category(category_id: int, db: Session = Depends(get_db)):
     if not products:
         raise HTTPException(status_code=404, detail="No products found for this category")
     return products
+
+
+
+@app.get("/products/code/{codigo}", response_model=schemas.ProductSchema)
+def read_product_by_code(codigo: str, db: Session = Depends(get_db)):
+    product = crud.get_product_by_code(db, codigo)
+    if not product:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return product
