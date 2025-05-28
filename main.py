@@ -19,6 +19,27 @@ def get_db():
         db.close()
 
 # Endpoints
+from fastapi import FastAPI, Depends, HTTPException 
+from sqlalchemy.orm import Session
+from database import SessionLocal, engine
+import models, crud, schemas
+from typing import List
+from fastapi import Query
+
+# Crear tablas automáticamente si no existen
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+# Dependencia para obtener la sesión de base de datos
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Endpoints
 @app.get("/products", response_model=list[schemas.ProductSchema])
 def read_products(db: Session = Depends(get_db)):
     return crud.get_products(db)
@@ -64,3 +85,13 @@ def read_product_by_code(codigo: str, db: Session = Depends(get_db)):
     if not product:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return product
+
+@app.post("/products/update_stock/{codigo}/")
+def update_stock(codigo: str, cantidad: int = Query(..., gt=0), db: Session = Depends(get_db)):
+    producto = crud.descontar_stock(db, codigo, cantidad)
+    return {"message": f"Stock actualizado. Nuevo stock: {producto.stock}"}
+
+@app.get("/low-stock", response_model=List[schemas.ProductSchema])
+def read_products_low_stock(db: Session = Depends(get_db)):
+    productos = crud.get_products_with_low_stock(db)
+    return productos

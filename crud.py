@@ -3,6 +3,8 @@ from models import Product
 from schemas import ProductCreate
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
+from sqlalchemy import and_
+import models
 
 def get_products(db: Session):
     return db.query(Product).all()
@@ -68,3 +70,17 @@ def get_products_by_category(db: Session, category_id: int):
 
 def get_product_by_code(db: Session, codigo: str):
     return db.query(Product).filter(Product.codigo == codigo).first()
+
+def descontar_stock(db: Session, codigo: str, cantidad: int):
+    producto = get_product_by_code(db, codigo)
+    if not producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    if producto.stock < cantidad:
+        raise HTTPException(status_code=400, detail="Stock insuficiente")
+    producto.stock -= cantidad
+    db.commit()
+    db.refresh(producto)
+    return producto
+
+def get_products_with_low_stock(db: Session):
+    return db.query(models.Product).filter(models.Product.stock <= models.Product.stock_min).all()
