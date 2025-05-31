@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, BigInteger, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, BigInteger, String, Text, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -19,3 +19,18 @@ class Product(Base):
     image = Column(String(100), nullable=True)
     category_id = Column(BigInteger, ForeignKey("products_category.id"))
     category = relationship("Category")
+
+class User(Base):
+    __tablename__ = "user_customuser"
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    password = Column(String(128), nullable=False)
+    last_login = Column(DateTime, nullable=True)
+    is_superuser = Column(Boolean, default=False)
+    email = Column(String(254), unique=True, index=True, nullable=False)
+    nombre = Column(String(50), nullable=False)
+    apellido = Column(String(50), nullable=False)
+    rut = Column(String(12), unique=True, nullable=False)
+    rol = Column(String(20), nullable=False)
+    is_active = Column(Boolean, default=True)
+    is_staff = Column(Boolean, default=False)
