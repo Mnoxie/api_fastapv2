@@ -25,7 +25,6 @@ def get_db():
 async def root():
     return {"message": "API FastAPI corriendo"}
 
-# Endpoint para login y generar token JWT
 @app.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -38,11 +37,21 @@ async def login_for_access_token(
             detail="Email o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.email, "rol": user.rol},  # 👈 incluye el rol en el token
+        expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "email": user.email,
+            "rol": user.rol  # 👈 incluye el rol en la respuesta
+        }
+    }
 
 # Endpoint protegido para obtener datos del usuario actual
 @app.get("/users/me", response_model=schemas.UserSchema)
