@@ -1,12 +1,11 @@
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 class CategorySchema(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True  # también puedes usar from_attributes=True según versión FastAPI
+    model_config = ConfigDict(from_attributes=True)
 
 class ProductCreate(BaseModel):
     codigo: str
@@ -20,27 +19,24 @@ class ProductCreate(BaseModel):
 
 class ProductSchema(ProductCreate):
     id: int
-    category: Optional[CategorySchema] = None  # relación para cargar categoría
+    category: Optional[CategorySchema] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
-# --- Ahora agrego los schemas para User ---
+# --- Schemas para User ---
 
 class GroupSchema(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PermissionSchema(BaseModel):
     id: int
     name: str
     codename: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -60,9 +56,7 @@ class UserSchema(UserBase):
     groups: List[GroupSchema] = []
     user_permissions: List[PermissionSchema] = []
 
-    class Config:
-        orm_mode = True
-
+    model_config = ConfigDict(from_attributes=True)
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr]
@@ -72,5 +66,4 @@ class UserUpdate(BaseModel):
     rol: Optional[str]
     password: Optional[str] = Field(None, min_length=6)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
